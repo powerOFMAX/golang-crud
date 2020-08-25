@@ -3,25 +3,25 @@ package config
 import (
 	"context"
 	"log"
-	"time"
 	"os"
+	"time"
 
+	"app/pkg/controllers"
+	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-	"app/pkg/controllers"
-	"github.com/joho/godotenv"
 )
 
 func getEnvValue(key string) string {
-  // load .env file
-  err := godotenv.Load(".env")
+	// load .env file
+	err := godotenv.Load(".env")
 
-  if err != nil {
-    log.Fatalf("Error loading .env file")
-  }
+	if err != nil {
+		log.Fatalf("Error loading .env file")
+	}
 
-  return os.Getenv(key)
+	return os.Getenv(key)
 }
 
 func Connect() {
@@ -33,7 +33,7 @@ func Connect() {
 	dbUrl := getEnvValue("DB_URL")
 	dbName := getEnvValue("DB_NAME")
 
-	clientOptions := options.Client().ApplyURI("mongodb+srv://" + dbUser+ ":"+ dbPw + "@" + dbUrl)
+	clientOptions := options.Client().ApplyURI("mongodb+srv://" + dbUser + ":" + dbPw + "@" + dbUrl)
 	client, err := mongo.NewClient(clientOptions)
 
 	//Set up a context required by mongo.Connect

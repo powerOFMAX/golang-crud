@@ -7,15 +7,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type Message struct {
-	ID        primitive.ObjectID `bson:"_id" json:"_id,omitempty"`
-	Title     string    `json:"title"`
-	Content   string    `json:"content"`
-	Author    string    `json:"author"`
+	ID      primitive.ObjectID `bson:"_id" json:"_id,omitempty"`
+	Title   string             `json:"title"`
+	Content string             `json:"content"`
+	Author  string             `json:"author"`
 }
 
 // DATABASE INSTANCE
@@ -39,11 +39,11 @@ func GetAllMessages(c *gin.Context) {
 	}
 
 	// Iterate through the returned cursor.
-    for cursor.Next(context.TODO()) {
-				var message Message
-        cursor.Decode(&message)
-        messages = append(messages, message)
-		}
+	for cursor.Next(context.TODO()) {
+		var message Message
+		cursor.Decode(&message)
+		messages = append(messages, message)
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
@@ -62,10 +62,10 @@ func CreateMessage(c *gin.Context) {
 	id := primitive.NewObjectID()
 
 	newMessage := Message{
-		ID: id,
-		Title:     title,
-		Content:   content,
-		Author:    author,
+		ID:      id,
+		Title:   title,
+		Content: content,
+		Author:  author,
 	}
 	_, err := collection.InsertOne(context.TODO(), newMessage)
 
@@ -92,7 +92,7 @@ func GetSingleMessage(c *gin.Context) {
 	message := Message{}
 	err = collection.FindOne(context.TODO(), bson.M{"_id": objectId}).Decode(&message)
 	if err != nil {
-			log.Printf("Error while getting a single Message, Reason: %v\n", err)
+		log.Printf("Error while getting a single Message, Reason: %v\n", err)
 		c.JSON(http.StatusNotFound, gin.H{
 			"status":  http.StatusNotFound,
 			"message": "Message not found",
@@ -103,7 +103,7 @@ func GetSingleMessage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"status":  http.StatusOK,
 		"message": "Single Message",
-		"data": message,
+		"data":    message,
 	})
 	return
 }
@@ -113,22 +113,22 @@ func DeleteMessage(c *gin.Context) {
 	objectId, err := primitive.ObjectIDFromHex(messageId)
 
 	log.Printf(messageId)
-		_, err = collection.DeleteOne(context.TODO(), bson.M{"_id": objectId})
-		if err != nil {
-			log.Printf("Error while deleting a single message, Reason: %v\n", err)
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"status":  http.StatusInternalServerError,
-				"message": "Something went wrong",
-			})
-			return
-		}
-	
-		c.JSON(http.StatusOK, gin.H{
-			"status":  http.StatusOK,
-			"message": "Message deleted successfully",
+	_, err = collection.DeleteOne(context.TODO(), bson.M{"_id": objectId})
+	if err != nil {
+		log.Printf("Error while deleting a single message, Reason: %v\n", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"status":  http.StatusInternalServerError,
+			"message": "Something went wrong",
 		})
 		return
 	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status":  http.StatusOK,
+		"message": "Message deleted successfully",
+	})
+	return
+}
 
 func EditMessage(c *gin.Context) {
 	messageId := c.Param("messageId")
@@ -140,20 +140,20 @@ func EditMessage(c *gin.Context) {
 	}
 
 	newData := bson.M{
-            "$set": bson.M{
-            "title": message.Title,
-						"content": message.Content,
-						"author": message.Author,
-            },
-        }
+		"$set": bson.M{
+			"title":   message.Title,
+			"content": message.Content,
+			"author":  message.Author,
+		},
+	}
 
 	_, err = collection.UpdateOne(context.TODO(), bson.M{"_id": objectId}, newData)
 	log.Println(err)
 	if err != nil {
 		log.Printf("Error, Reason: %v\n", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"status": 500,
-			"message":  "Something went wrong",
+			"status":  500,
+			"message": "Something went wrong",
 		})
 		return
 	}

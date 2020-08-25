@@ -1,9 +1,9 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
 	"app/pkg/config"
 	"app/pkg/routes"
+	"github.com/gin-gonic/gin"
 	"log"
 )
 

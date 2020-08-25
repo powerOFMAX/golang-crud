@@ -1,9 +1,9 @@
 package routes
 
 import (
-	"net/http"
-	"github.com/gin-gonic/gin"
 	"app/pkg/controllers"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func Routes(router *gin.Engine) {
